@@ -33,7 +33,7 @@ class AlbumInfo:
 @dataclass(slots=True)
 class AlbumMetadata:
     info: AlbumInfo
-    album: int
+    album: str
     albumartist: str
     year: str
     genre: list[str]
@@ -83,7 +83,9 @@ class AlbumMetadata:
     @classmethod
     def from_qobuz(cls, resp: dict) -> AlbumMetadata:
         album = resp.get("title", "Unknown Album")
-        versions = resp.get("version")
+        version = typed(resp.get("version"), str | None)
+        if version is not None and version not in album:
+            album = f"{album} ({version})"
         tracktotal = resp.get("tracks_count", 1)
         genre = resp.get("genres_list") or resp.get("genre") or []
         genres = list(set(genre_clean.findall("/".join(genre))))
@@ -138,14 +140,10 @@ class AlbumMetadata:
             bit_depth=bit_depth,
             booklets=booklets,
         )
-        version = versions
-        if version == None :
-            albums = album
-        else:
-            albums = "{} ({})".format(album, versions)
+
         return AlbumMetadata(
             info,
-            album=albums,
+            album=album,
             albumartist=albumartist,
             year=year,
             genre=genres,
