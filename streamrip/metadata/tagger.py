@@ -72,8 +72,11 @@ METADATA_TYPES = (
     "album",
     "albumartist",
     "composer",
+    "publisher",
+    "label",
+    "mediatype",
+    "upc",
     "year",
-    "comment",
     "description",
     "purchase_date",
     "grouping",
@@ -88,6 +91,7 @@ METADATA_TYPES = (
     "disctotal",
     "date",
     "isrc",
+    "comment",
 )
 
 
@@ -183,6 +187,7 @@ class Container(Enum):
             "discnumber",
             "composer",
             "isrc",
+            "comment",
         }
         if attr in in_trackmetadata:
             if attr == "album":
@@ -192,7 +197,7 @@ class Container(Enum):
                 return None
             return str(val)
         else:
-            if attr == "genre":
+            if attr == "genres":
                 return meta.album.get_genres()
             elif attr == "copyright":
                 return meta.album.get_copyright()

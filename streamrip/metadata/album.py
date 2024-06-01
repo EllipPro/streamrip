@@ -23,7 +23,7 @@ class AlbumInfo:
     id: str
     quality: int
     container: str
-    label: Optional[str] = None
+
     explicit: bool = False
     sampling_rate: int | float | None = None
     bit_depth: int | None = None
@@ -35,6 +35,9 @@ class AlbumMetadata:
     info: AlbumInfo
     album: str
     albumartist: str
+    label: str
+    mediatype: str
+    upc: str
     year: str
     genre: list[str]
     covers: Covers
@@ -50,6 +53,7 @@ class AlbumMetadata:
     grouping: str | None = None
     lyrics: str | None = None
     purchase_date: str | None = None
+    publisher: str | None = None
 
     def get_genres(self) -> str:
         return ", ".join(self.genre)
@@ -87,8 +91,7 @@ class AlbumMetadata:
         if version is not None and version not in album:
             album = f"{album} ({version})"
         tracktotal = resp.get("tracks_count", 1)
-        genre = resp.get("genres_list") or resp.get("genre") or []
-        genres = list(set(genre_clean.findall("/".join(genre))))
+        genre = resp.get("genre", {}).get("name") or []
         date = resp.get("release_date_original") or resp.get("release_date")
         year = date[:4] if date is not None else "Unknown"
 
@@ -103,7 +106,10 @@ class AlbumMetadata:
         _label = resp.get("label")
         if isinstance(_label, dict):
             _label = _label["name"]
-        label = typed(_label or "", str)
+        label = _label
+        publisher = typed(resp.get("label", {}).get("name"), str | None)
+        mediatype = typed(resp.get("product_type"), str)
+        upc = typed(resp.get("upc"), str)
         description = typed(resp.get("description", ""), str)
         disctotal = typed(
             max(
@@ -134,7 +140,7 @@ class AlbumMetadata:
             id=item_id,
             quality=quality,
             container=container,
-            label=label,
+
             explicit=explicit,
             sampling_rate=sampling_rate,
             bit_depth=bit_depth,
@@ -145,8 +151,12 @@ class AlbumMetadata:
             info,
             album=album,
             albumartist=albumartist,
+            label=label,
+            publisher=publisher,
+            mediatype=mediatype,
+            upc=upc,
             year=year,
-            genre=genres,
+            genre=genre,
             covers=cover_urls,
             albumcomposer=albumcomposer,
             comment=None,

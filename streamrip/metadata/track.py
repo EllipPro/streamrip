@@ -24,7 +24,7 @@ class TrackInfo:
 @dataclass(slots=True)
 class TrackMetadata:
     info: TrackInfo
-
+    comment: str
     title: str
     album: AlbumMetadata
     artist: str
@@ -60,6 +60,7 @@ class TrackMetadata:
             ),
             str,
         )
+        comment = resp.get("performers")
         track_id = str(resp["id"])
         bit_depth = typed(resp.get("maximum_bit_depth"), int | None)
         sampling_rate = typed(resp.get("maximum_sampling_rate"), int | float | None)
@@ -76,6 +77,7 @@ class TrackMetadata:
         )
         return cls(
             info=info,
+            comment=comment,
             title=title,
             album=album,
             artist=artist,
