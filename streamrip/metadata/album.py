@@ -97,10 +97,7 @@ class AlbumMetadata:
 
         _copyright = resp.get("copyright", "")
 
-        if artists := resp.get("artists"):
-            albumartist = ", ".join(a["name"] for a in artists)
-        else:
-            albumartist = typed(safe_get(resp, "artist", "name"), str)
+        albumartist = resp.get('subtitle')
 
         albumcomposer = typed(safe_get(resp, "composer", "name", default=""), str)
         _label = resp.get("label")

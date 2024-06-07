@@ -92,6 +92,14 @@ METADATA_TYPES = (
     "date",
     "isrc",
     "comment",
+    "arranger",
+    "lyricist",
+    "conductor",
+    "masteringengineer",
+    "mixingengineer",
+    "orchestrator",
+    "producer",
+    "vocals",
 )
 
 
@@ -188,6 +196,14 @@ class Container(Enum):
             "composer",
             "isrc",
             "comment",
+            "arranger",
+            "lyricist",
+            "conductor",
+            "masteringengineer",
+            "mixingengineer",
+            "orchestrator",
+            "producer",
+            "vocals",
         }
         if attr in in_trackmetadata:
             if attr == "album":

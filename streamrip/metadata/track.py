@@ -1,14 +1,171 @@
 from __future__ import annotations
 
+from collections import defaultdict
 import logging
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, List
+from enum import Enum
 
 from .album import AlbumMetadata
 from .util import safe_get, typed
 
 logger = logging.getLogger("streamrip")
 
+class InvolvedPersonRoleType(Enum):
+    Miscellaneous = 0
+    Composer = 1
+    Conductor = 2
+    FeaturedArtist = 3
+    Instruments = 4
+    Lyricist = 5
+    MainArtist = 6
+    MixArtist = 7
+    Producer = 8
+    Publisher = 9
+    Arranger = 10
+    AandRDirector = 11
+    AandR = 12
+    AAndRAdministrator = 13
+    AdditionalProduction = 14
+    AHH = 15
+    AssistantMixer = 16
+    AssistantEngineer = 17
+    AssistantProducer = 18
+    AsstRecordingEngineer = 19
+    AssociatedPerformer = 20
+    Author = 21
+    Choir = 22
+    ChorusMaster = 23
+    Contractor = 24
+    CoProducer = 25
+    Masterer = 26
+    MiscProd = 27
+    MusicProduction = 28
+    PerformanceArranger = 29
+    Programming = 30
+    Programmer = 31
+    RecordingEngineer = 32
+    Soloist = 33
+    StudioPersonnel = 34
+    Vocals = 35
+    Writer = 36
+    ComposerLyricist = 37
+    Composer_Lyricist = 38
+    main_artist = 39
+    Remixer = 40
+    ReMixer = 41
+    MusicPublisher = 42
+    BassGuitar = 43
+    Cello = 44
+    Drums = 45
+    Guitar = 46
+    Horn = 47
+    Keyboards = 48
+    Percussion = 49
+    Piano = 50
+    Trombone = 51
+    Tuba = 52
+    Trumpet = 53
+    Viola = 54
+    Violin = 55
+    Orchestra = 56
+    Engineer = 57
+    MasteringEngineer = 58
+    MixingEngineer = 59
+
+class InvolvedPersonRoleMapping:
+    RoleMappings = {
+        InvolvedPersonRoleType.Miscellaneous: ["Miscellaneous"],
+        InvolvedPersonRoleType.Composer: ["Composer", "Composer/r", "ComposerLyricist", "Composer-Lyricist"],
+        InvolvedPersonRoleType.Conductor: ["Conductor", "Conductor/r"],
+        InvolvedPersonRoleType.Engineer: ["Engineer"],
+        InvolvedPersonRoleType.FeaturedArtist: ["FeaturedArtist", "Featuring", "featured-artist"],
+        InvolvedPersonRoleType.Lyricist: ["Lyricist", "ComposerLyricist", "Composer-Lyricist"],
+        InvolvedPersonRoleType.MainArtist: ["MainArtist", "main-artist", "Performer"],
+        InvolvedPersonRoleType.MasteringEngineer: ["Mastering Engineer", "MasteringEngineer"],
+        InvolvedPersonRoleType.MixArtist: ["Remixer", "Re-Mixer"],
+        InvolvedPersonRoleType.MixingEngineer: ["Mixing Engineer", "RemixingEngineer", "Remixing Engineer"],
+        InvolvedPersonRoleType.Orchestra: ["Orchestra", "Orchestra"],
+        InvolvedPersonRoleType.Producer: ["Producer"],
+        InvolvedPersonRoleType.Publisher: ["Publisher", "MusicPublisher"],
+        InvolvedPersonRoleType.Arranger: ["Arranger"],
+        InvolvedPersonRoleType.AandRDirector: ["AandRDirector"],
+        InvolvedPersonRoleType.AandR: ["AandR"],
+        InvolvedPersonRoleType.AAndRAdministrator: ["AAndRAdministrator"],
+        InvolvedPersonRoleType.AdditionalProduction: ["AdditionalProduction"],
+        InvolvedPersonRoleType.AHH: ["AHH"],
+        InvolvedPersonRoleType.AssistantMixer: ["AssistantMixer"],
+        InvolvedPersonRoleType.AssistantEngineer: ["AssistantEngineer"],
+        InvolvedPersonRoleType.AssistantProducer: ["AssistantProducer"],
+        InvolvedPersonRoleType.AsstRecordingEngineer: ["AsstRecordingEngineer"],
+        InvolvedPersonRoleType.AssociatedPerformer: ["AssociatedPerformer"],
+        InvolvedPersonRoleType.Author: ["Author"],
+        InvolvedPersonRoleType.Choir: ["Choir"],
+        InvolvedPersonRoleType.ChorusMaster: ["ChorusMaster"],
+        InvolvedPersonRoleType.Contractor: ["Contractor"],
+        InvolvedPersonRoleType.CoProducer: ["CoProducer"],
+        InvolvedPersonRoleType.Masterer: ["Masterer"],
+        InvolvedPersonRoleType.MiscProd: ["MiscProd"],
+        InvolvedPersonRoleType.MusicProduction: ["MusicProduction"],
+        InvolvedPersonRoleType.PerformanceArranger: ["PerformanceArranger"],
+        InvolvedPersonRoleType.Programming: ["Programming"],
+        InvolvedPersonRoleType.Programmer: ["Programmer"],
+        InvolvedPersonRoleType.RecordingEngineer: ["RecordingEngineer"],
+        InvolvedPersonRoleType.Soloist: ["Soloist"],
+        InvolvedPersonRoleType.StudioPersonnel: ["StudioPersonnel"],
+        InvolvedPersonRoleType.Vocals: ["Vocals"],
+        InvolvedPersonRoleType.Writer: ["Writer"],
+        InvolvedPersonRoleType.BassGuitar: ["BassGuitar"],
+        InvolvedPersonRoleType.Cello: ["Cello"],
+        InvolvedPersonRoleType.Drums: ["Drums"],
+        InvolvedPersonRoleType.Guitar: ["Guitar"],
+        InvolvedPersonRoleType.Horn: ["Horn"],
+        InvolvedPersonRoleType.Keyboards: ["Keyboards"],
+        InvolvedPersonRoleType.Percussion: ["Percussion"],
+        InvolvedPersonRoleType.Piano: ["Piano"],
+        InvolvedPersonRoleType.Trombone: ["Trombone"],
+        InvolvedPersonRoleType.Tuba: ["Tuba"],
+        InvolvedPersonRoleType.Trumpet: ["Trumpet"],
+        InvolvedPersonRoleType.Viola: ["Viola"],
+        InvolvedPersonRoleType.Violin: ["Violin"],
+        InvolvedPersonRoleType.Orchestra: ["Orchestra"]
+    }
+    @staticmethod
+    def get_strings_by_role(role: InvolvedPersonRoleType) -> List[str]:
+        return InvolvedPersonRoleMapping.RoleMappings.get(role, [])
+
+    @staticmethod
+    def get_role_by_string(role_string: str) -> InvolvedPersonRoleType:
+        for role, strings in InvolvedPersonRoleMapping.RoleMappings.items():
+            if role_string in strings:
+                return role
+        return InvolvedPersonRoleType.Miscellaneous  # Default to Miscellaneous
+
+class PerformersParser:
+    def __init__(self, performers_full_string: str):
+        self.performers = defaultdict(list)
+        self.performers_full_string = performers_full_string
+
+        if performers_full_string:
+            for performer in performers_full_string.split(" - "):
+                name, *roles = performer.split(', ')
+                for role in roles:
+                    role_enum = InvolvedPersonRoleMapping.get_role_by_string(role)
+                    self.add_performer(name, role_enum)
+
+    def add_performer(self, name: str, role: InvolvedPersonRoleType):
+        self.performers[role].append(name)
+
+    def get_performers_with_role(self, role: InvolvedPersonRoleType) -> List[str]:
+        return self.performers.get(role, [])
+
+    def get_specific_role(self, specific_role: str) -> List[str]:
+        result = []
+        for performer in self.performers_full_string.split(" - "):
+            name, *roles = performer.split(', ')
+            if specific_role in roles:
+                result.append(name)
+        return result
 
 @dataclass(slots=True)
 class TrackInfo:
@@ -20,10 +177,18 @@ class TrackInfo:
     sampling_rate: Optional[int | float] = None
     work: Optional[str] = None
 
-
 @dataclass(slots=True)
 class TrackMetadata:
     info: TrackInfo
+    performers_full_string: str
+    arranger: str
+    lyricist: str
+    conductor: str
+    masteringengineer: str
+    mixingengineer: str
+    orchestrator: str
+    producer: str
+    vocals: str
     comment: str
     title: str
     album: AlbumMetadata
@@ -35,10 +200,11 @@ class TrackMetadata:
 
     @classmethod
     def from_qobuz(cls, album: AlbumMetadata, resp: dict) -> TrackMetadata | None:
+        performers_full_string = resp.get("performers")
+        parser = PerformersParser(performers_full_string)
         title = typed(resp["title"].strip(), str)
         isrc = typed(resp["isrc"], str)
         streamable = typed(resp.get("streamable", False), bool)
-
         if not streamable:
             return None
 
@@ -49,17 +215,31 @@ class TrackMetadata:
         if work is not None and work not in title:
             title = f"{work}: {title}"
 
-        composer = typed(resp.get("composer", {}).get("name"), str | None)
+        arranger = parser.get_performers_with_role(InvolvedPersonRoleType.Arranger)
+        arranger = ', '.join(arranger)
+        composer = parser.get_performers_with_role(InvolvedPersonRoleType.Composer)
+        composer = ', '.join(composer)
         tracknumber = typed(resp.get("track_number", 1), int)
         discnumber = typed(resp.get("media_number", 1), int)
-        artist = typed(
-            safe_get(
-                resp,
-                "performer",
-                "name",
-            ),
-            str,
-        )
+        lyricist = parser.get_performers_with_role(InvolvedPersonRoleType.Lyricist)
+        lyricist = ', '.join(lyricist)
+        artist = parser.get_performers_with_role(InvolvedPersonRoleType.MainArtist)
+        if artist:
+            artist = ', '.join(artist)
+        else:
+            artist = album.albumartist
+        conductor = parser.get_performers_with_role(InvolvedPersonRoleType.Conductor)
+        conductor = ', '.join(conductor)
+        masteringengineer = parser.get_performers_with_role(InvolvedPersonRoleType.MasteringEngineer)
+        masteringengineer = ', '.join(masteringengineer)
+        mixingengineer = parser.get_performers_with_role(InvolvedPersonRoleType.MixingEngineer)
+        mixingengineer = ', '.join(mixingengineer)
+        orchestrator = parser.get_performers_with_role(InvolvedPersonRoleType.Orchestra)
+        orchestrator = ', '.join(orchestrator)
+        producer = parser.get_performers_with_role(InvolvedPersonRoleType.Producer)
+        producer = ', '.join(producer)
+        vocal = parser.get_performers_with_role(InvolvedPersonRoleType.Vocals)
+        vocals = ', '.join(vocal)
         comment = resp.get("performers")
         track_id = str(resp["id"])
         bit_depth = typed(resp.get("maximum_bit_depth"), int | None)
@@ -77,6 +257,15 @@ class TrackMetadata:
         )
         return cls(
             info=info,
+            performers_full_string=performers_full_string,
+            arranger=arranger,
+            lyricist=lyricist,
+            conductor=conductor,
+            masteringengineer=masteringengineer,
+            mixingengineer=mixingengineer,
+            orchestrator=orchestrator,
+            producer=producer,
+            vocals=vocals,
             comment=comment,
             title=title,
             album=album,
@@ -86,144 +275,10 @@ class TrackMetadata:
             composer=composer,
             isrc=isrc,
         )
-
-    @classmethod
-    def from_deezer(cls, album: AlbumMetadata, resp) -> TrackMetadata | None:
-        track_id = str(resp["id"])
-        isrc = typed(resp["isrc"], str)
-        bit_depth = 16
-        sampling_rate = 44.1
-        explicit = typed(resp["explicit_lyrics"], bool)
-        work = None
-        title = typed(resp["title"], str)
-        artist = typed(resp["artist"]["name"], str)
-        tracknumber = typed(resp["track_position"], int)
-        discnumber = typed(resp["disk_number"], int)
-        composer = None
-        info = TrackInfo(
-            id=track_id,
-            quality=album.info.quality,
-            bit_depth=bit_depth,
-            explicit=explicit,
-            sampling_rate=sampling_rate,
-            work=work,
-        )
-        return cls(
-            info=info,
-            title=title,
-            album=album,
-            artist=artist,
-            tracknumber=tracknumber,
-            discnumber=discnumber,
-            composer=composer,
-            isrc=isrc,
-        )
-
-    @classmethod
-    def from_soundcloud(cls, album: AlbumMetadata, resp: dict) -> TrackMetadata:
-        track = resp
-        track_id = track["id"]
-        isrc = typed(safe_get(track, "publisher_metadata", "isrc"), str | None)
-        bit_depth, sampling_rate = None, None
-        explicit = typed(
-            safe_get(track, "publisher_metadata", "explicit", default=False),
-            bool,
-        )
-
-        title = typed(track["title"].strip(), str)
-        artist = typed(track["user"]["username"], str)
-        tracknumber = 1
-
-        info = TrackInfo(
-            id=track_id,
-            quality=album.info.quality,
-            bit_depth=bit_depth,
-            explicit=explicit,
-            sampling_rate=sampling_rate,
-            work=None,
-        )
-        return cls(
-            info=info,
-            title=title,
-            album=album,
-            artist=artist,
-            tracknumber=tracknumber,
-            discnumber=0,
-            composer=None,
-            isrc=isrc,
-        )
-
-    @classmethod
-    def from_tidal(cls, album: AlbumMetadata, track) -> TrackMetadata:
-        title = typed(track["title"], str).strip()
-        item_id = str(track["id"])
-        isrc = typed(track["isrc"], str)
-        version = track.get("version")
-        explicit = track.get("explicit", False)
-        if version:
-            title = f"{title} ({version})"
-
-        tracknumber = typed(track.get("trackNumber", 1), int)
-        discnumber = typed(track.get("volumeNumber", 1), int)
-
-        artists = track.get("artists")
-        if len(artists) > 0:
-            artist = ", ".join(a["name"] for a in artists)
-        else:
-            artist = track["artist"]["name"]
-
-        quality_map: dict[str, int] = {
-            "LOW": 0,
-            "HIGH": 1,
-            "LOSSLESS": 2,
-            "HI_RES": 3,
-        }
-
-        tidal_quality = track.get("audioQuality")
-        if tidal_quality is not None:
-            quality = quality_map[tidal_quality]
-        else:
-            quality = 0
-
-        if quality >= 2:
-            sampling_rate = 44100
-            if quality == 3:
-                bit_depth = 24
-            else:
-                bit_depth = 16
-        else:
-            sampling_rate = bit_depth = None
-
-        info = TrackInfo(
-            id=item_id,
-            quality=quality,
-            bit_depth=bit_depth,
-            explicit=explicit,
-            sampling_rate=sampling_rate,
-            work=None,
-        )
-        return cls(
-            info=info,
-            title=title,
-            album=album,
-            artist=artist,
-            tracknumber=tracknumber,
-            discnumber=discnumber,
-            composer=None,
-            isrc=isrc,
-        )
-
     @classmethod
     def from_resp(cls, album: AlbumMetadata, source, resp) -> TrackMetadata | None:
         if source == "qobuz":
             return cls.from_qobuz(album, resp)
-        if source == "tidal":
-            return cls.from_tidal(album, resp)
-        if source == "soundcloud":
-            return cls.from_soundcloud(album, resp)
-        if source == "deezer":
-            return cls.from_deezer(album, resp)
-        raise Exception
 
     def format_track_path(self, format_string: str) -> str:
         # Available keys: "tracknumber", "artist", "albumartist", "composer", "title",
