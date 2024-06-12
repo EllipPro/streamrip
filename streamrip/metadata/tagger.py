@@ -95,9 +95,10 @@ METADATA_TYPES = (
     "arranger",
     "lyricist",
     "conductor",
+    "featured",
     "masteringengineer",
     "mixingengineer",
-    "orchestrator",
+    "orchestra",
     "producer",
     "vocals",
 )
@@ -199,10 +200,12 @@ class Container(Enum):
             "arranger",
             "lyricist",
             "conductor",
+            "featured",
             "masteringengineer",
             "mixingengineer",
-            "orchestrator",
+            "orchestra",
             "producer",
+            "publisher",
             "vocals",
         }
         if attr in in_trackmetadata:

@@ -49,29 +49,23 @@ class InvolvedPersonRoleType(Enum):
     StudioPersonnel = 34
     Vocals = 35
     Writer = 36
-    ComposerLyricist = 37
-    Composer_Lyricist = 38
-    main_artist = 39
-    Remixer = 40
-    ReMixer = 41
-    MusicPublisher = 42
-    BassGuitar = 43
-    Cello = 44
-    Drums = 45
-    Guitar = 46
-    Horn = 47
-    Keyboards = 48
-    Percussion = 49
-    Piano = 50
-    Trombone = 51
-    Tuba = 52
-    Trumpet = 53
-    Viola = 54
-    Violin = 55
-    Orchestra = 56
-    Engineer = 57
-    MasteringEngineer = 58
-    MixingEngineer = 59
+    BassGuitar = 37
+    Cello = 38
+    Drums = 39
+    Guitar = 40
+    Horn = 41
+    Keyboards = 42
+    Percussion = 43
+    Piano = 44
+    Trombone = 45
+    Tuba = 46
+    Trumpet = 47
+    Viola = 48
+    Violin = 49
+    Orchestra = 50
+    Engineer = 51
+    MasteringEngineer = 52
+    MixingEngineer = 53
 
 class InvolvedPersonRoleMapping:
     RoleMappings = {
@@ -184,10 +178,12 @@ class TrackMetadata:
     arranger: str
     lyricist: str
     conductor: str
+    featured: str
     masteringengineer: str
     mixingengineer: str
-    orchestrator: str
+    orchestra: str
     producer: str
+    publisher: str
     vocals: str
     comment: str
     title: str
@@ -218,7 +214,10 @@ class TrackMetadata:
         arranger = parser.get_performers_with_role(InvolvedPersonRoleType.Arranger)
         arranger = ', '.join(arranger)
         composer = parser.get_performers_with_role(InvolvedPersonRoleType.Composer)
-        composer = ', '.join(composer)
+        if composer:
+           composer = ', '.join(composer)
+        else:
+            composer = typed(resp.get("composer", {}).get("name"), str | None)
         tracknumber = typed(resp.get("track_number", 1), int)
         discnumber = typed(resp.get("media_number", 1), int)
         lyricist = parser.get_performers_with_role(InvolvedPersonRoleType.Lyricist)
@@ -227,17 +226,26 @@ class TrackMetadata:
         if artist:
             artist = ', '.join(artist)
         else:
-            artist = album.albumartist
+            artist = typed(safe_get(resp, "performer", "name", ),str, )
         conductor = parser.get_performers_with_role(InvolvedPersonRoleType.Conductor)
         conductor = ', '.join(conductor)
+        featured = parser.get_performers_with_role(InvolvedPersonRoleType.FeaturedArtist)
+        featured = ', '.join(featured)
+        if featured:
+            title = f"{title} (feat. {featured})"
         masteringengineer = parser.get_performers_with_role(InvolvedPersonRoleType.MasteringEngineer)
         masteringengineer = ', '.join(masteringengineer)
         mixingengineer = parser.get_performers_with_role(InvolvedPersonRoleType.MixingEngineer)
         mixingengineer = ', '.join(mixingengineer)
-        orchestrator = parser.get_performers_with_role(InvolvedPersonRoleType.Orchestra)
-        orchestrator = ', '.join(orchestrator)
+        orchestra = parser.get_performers_with_role(InvolvedPersonRoleType.Orchestra)
+        orchestra = ', '.join(orchestra)
         producer = parser.get_performers_with_role(InvolvedPersonRoleType.Producer)
         producer = ', '.join(producer)
+        publisher = parser.get_performers_with_role(InvolvedPersonRoleType.Publisher)
+        if publisher:
+            publisher = ', '.join(publisher)
+        else:
+            publisher = album.label
         vocal = parser.get_performers_with_role(InvolvedPersonRoleType.Vocals)
         vocals = ', '.join(vocal)
         comment = resp.get("performers")
@@ -261,10 +269,12 @@ class TrackMetadata:
             arranger=arranger,
             lyricist=lyricist,
             conductor=conductor,
+            featured=featured,
             masteringengineer=masteringengineer,
             mixingengineer=mixingengineer,
-            orchestrator=orchestrator,
+            orchestra=orchestra,
             producer=producer,
+            publisher=publisher,
             vocals=vocals,
             comment=comment,
             title=title,

@@ -53,7 +53,7 @@ class AlbumMetadata:
     grouping: str | None = None
     lyrics: str | None = None
     purchase_date: str | None = None
-    publisher: str | None = None
+
 
     def get_genres(self) -> str:
         return ", ".join(self.genre)
@@ -107,7 +107,6 @@ class AlbumMetadata:
         if isinstance(_label, dict):
             _label = _label["name"]
         label = _label
-        publisher = typed(resp.get("label", {}).get("name"), str | None)
         mediatype = typed(resp.get("product_type"), str)
         upc = typed(resp.get("upc"), str)
         description = typed(resp.get("description", ""), str)
@@ -152,7 +151,6 @@ class AlbumMetadata:
             album=album,
             albumartist=albumartist,
             label=label,
-            publisher=publisher,
             mediatype=mediatype,
             upc=upc,
             year=year,
