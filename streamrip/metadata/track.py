@@ -9,6 +9,11 @@ from enum import Enum
 from .album import AlbumMetadata
 from .util import safe_get, typed
 
+
+# Assuming AlbumMetadata and safe_get are imported correctly
+# from .album import AlbumMetadata
+# from .util import safe_get, typed
+
 logger = logging.getLogger("streamrip")
 
 class InvolvedPersonRoleType(Enum):
@@ -19,7 +24,7 @@ class InvolvedPersonRoleType(Enum):
     Instruments = 4
     Lyricist = 5
     MainArtist = 6
-    MixArtist = 7
+    MixingEngineer = 7
     Producer = 8
     Publisher = 9
     Arranger = 10
@@ -65,7 +70,6 @@ class InvolvedPersonRoleType(Enum):
     Orchestra = 50
     Engineer = 51
     MasteringEngineer = 52
-    MixingEngineer = 53
 
 class InvolvedPersonRoleMapping:
     RoleMappings = {
@@ -77,9 +81,8 @@ class InvolvedPersonRoleMapping:
         InvolvedPersonRoleType.Lyricist: ["Lyricist", "ComposerLyricist", "Composer-Lyricist"],
         InvolvedPersonRoleType.MainArtist: ["MainArtist", "main-artist", "Performer"],
         InvolvedPersonRoleType.MasteringEngineer: ["Mastering Engineer", "MasteringEngineer"],
-        InvolvedPersonRoleType.MixArtist: ["Remixer", "Re-Mixer"],
-        InvolvedPersonRoleType.MixingEngineer: ["Mixing Engineer", "RemixingEngineer", "Remixing Engineer"],
-        InvolvedPersonRoleType.Orchestra: ["Orchestra", "Orchestra"],
+        InvolvedPersonRoleType.MixingEngineer: ["Mixing Engineer", "RemixingEngineer", "Remixing Engineer", "Remixer", "Re-Mixer"],
+        InvolvedPersonRoleType.Orchestra: ["Orchestra"],
         InvolvedPersonRoleType.Producer: ["Producer"],
         InvolvedPersonRoleType.Publisher: ["Publisher", "MusicPublisher"],
         InvolvedPersonRoleType.Arranger: ["Arranger"],
@@ -121,9 +124,9 @@ class InvolvedPersonRoleMapping:
         InvolvedPersonRoleType.Tuba: ["Tuba"],
         InvolvedPersonRoleType.Trumpet: ["Trumpet"],
         InvolvedPersonRoleType.Viola: ["Viola"],
-        InvolvedPersonRoleType.Violin: ["Violin"],
-        InvolvedPersonRoleType.Orchestra: ["Orchestra"]
+        InvolvedPersonRoleType.Violin: ["Violin"]
     }
+
     @staticmethod
     def get_strings_by_role(role: InvolvedPersonRoleType) -> List[str]:
         return InvolvedPersonRoleMapping.RoleMappings.get(role, [])
@@ -139,9 +142,11 @@ class PerformersParser:
     def __init__(self, performers_full_string: str):
         self.performers = defaultdict(list)
         self.performers_full_string = performers_full_string
+        self._parse_performers()
 
-        if performers_full_string:
-            for performer in performers_full_string.split(" - "):
+    def _parse_performers(self):
+        if self.performers_full_string:
+            for performer in self.performers_full_string.split(" - "):
                 name, *roles = performer.split(', ')
                 for role in roles:
                     role_enum = InvolvedPersonRoleMapping.get_role_by_string(role)
@@ -165,7 +170,6 @@ class PerformersParser:
 class TrackInfo:
     id: str
     quality: int
-
     bit_depth: Optional[int] = None
     explicit: bool = False
     sampling_rate: Optional[int | float] = None
@@ -191,8 +195,8 @@ class TrackMetadata:
     artist: str
     tracknumber: int
     discnumber: int
-    composer: str | None
-    isrc: str | None = None
+    composer: Optional[str]
+    isrc: Optional[str] = None
 
     @classmethod
     def from_qobuz(cls, album: AlbumMetadata, resp: dict) -> TrackMetadata | None:
@@ -206,53 +210,26 @@ class TrackMetadata:
 
         version = typed(resp.get("version"), str | None)
         work = typed(resp.get("work"), str | None)
-        if version is not None and version not in title:
-            title = f"{title} ({version})"
-        if work is not None and work not in title:
-            title = f"{work}: {title}"
+        title = cls._append_version_and_work(title, version, work)
 
-        arranger = parser.get_performers_with_role(InvolvedPersonRoleType.Arranger)
-        arranger = ', '.join(arranger)
-        composer = parser.get_performers_with_role(InvolvedPersonRoleType.Composer)
-        if composer:
-           composer = ', '.join(composer)
-        else:
-            composer = typed(resp.get("composer", {}).get("name"), str | None)
+        arranger = cls._join_names(parser.get_performers_with_role(InvolvedPersonRoleType.Arranger))
+        composer = cls._get_composer(resp, parser)
         tracknumber = typed(resp.get("track_number", 1), int)
         discnumber = typed(resp.get("media_number", 1), int)
-        lyricist = parser.get_performers_with_role(InvolvedPersonRoleType.Lyricist)
-        lyricist = ', '.join(lyricist)
-        artist = parser.get_performers_with_role(InvolvedPersonRoleType.MainArtist)
-        if artist:
-            artist = ', '.join(artist)
-        else:
-            artist = typed(safe_get(resp, "performer", "name", ),str, )
-        conductor = parser.get_performers_with_role(InvolvedPersonRoleType.Conductor)
-        conductor = ', '.join(conductor)
-        featured = parser.get_performers_with_role(InvolvedPersonRoleType.FeaturedArtist)
-        featured = ', '.join(featured)
-        if featured:
-            title = f"{title} (feat. {featured})"
-        masteringengineer = parser.get_performers_with_role(InvolvedPersonRoleType.MasteringEngineer)
-        masteringengineer = ', '.join(masteringengineer)
-        mixingengineer = parser.get_performers_with_role(InvolvedPersonRoleType.MixingEngineer)
-        mixingengineer = ', '.join(mixingengineer)
-        orchestra = parser.get_performers_with_role(InvolvedPersonRoleType.Orchestra)
-        orchestra = ', '.join(orchestra)
-        producer = parser.get_performers_with_role(InvolvedPersonRoleType.Producer)
-        producer = ', '.join(producer)
-        publisher = parser.get_performers_with_role(InvolvedPersonRoleType.Publisher)
-        if publisher:
-            publisher = ', '.join(publisher)
-        else:
-            publisher = album.label
-        vocal = parser.get_performers_with_role(InvolvedPersonRoleType.Vocals)
-        vocals = ', '.join(vocal)
+        lyricist = cls._join_names(parser.get_performers_with_role(InvolvedPersonRoleType.Lyricist))
+        artist = cls._get_artist(resp, parser)
+        conductor = cls._join_names(parser.get_performers_with_role(InvolvedPersonRoleType.Conductor))
+        featured = cls._join_names(parser.get_performers_with_role(InvolvedPersonRoleType.FeaturedArtist))
+        masteringengineer = cls._join_names(parser.get_performers_with_role(InvolvedPersonRoleType.MasteringEngineer))
+        mixingengineer = cls._join_names(parser.get_performers_with_role(InvolvedPersonRoleType.MixingEngineer))
+        orchestra = cls._join_names(parser.get_performers_with_role(InvolvedPersonRoleType.Orchestra))
+        producer = cls._join_names(parser.get_performers_with_role(InvolvedPersonRoleType.Producer))
+        publisher = cls._get_publisher(resp, album, parser)
+        vocals = cls._join_names(parser.get_performers_with_role(InvolvedPersonRoleType.Vocals))
         comment = resp.get("performers")
         track_id = str(resp["id"])
         bit_depth = typed(resp.get("maximum_bit_depth"), int | None)
         sampling_rate = typed(resp.get("maximum_sampling_rate"), int | float | None)
-        # Is the info included?
         explicit = False
 
         info = TrackInfo(
@@ -285,14 +262,47 @@ class TrackMetadata:
             composer=composer,
             isrc=isrc,
         )
+
     @classmethod
     def from_resp(cls, album: AlbumMetadata, source, resp) -> TrackMetadata | None:
         if source == "qobuz":
             return cls.from_qobuz(album, resp)
 
+    @staticmethod
+    def _join_names(names: List[str]) -> str:
+        return ', '.join(names)
+
+    @staticmethod
+    def _append_version_and_work(title: str, version: Optional[str], work: Optional[str]) -> str:
+        if version and version not in title:
+            title = f"{title} ({version})"
+        if work and work not in title:
+            title = f"{work}: {title}"
+        return title
+
+    @staticmethod
+    def _get_composer(resp: dict, parser: PerformersParser) -> str | None:
+        composer = parser.get_performers_with_role(InvolvedPersonRoleType.Composer)
+        if composer:
+            return ', '.join(composer)
+        return typed(resp.get("composer", {}).get("name"), str | None)
+
+    @staticmethod
+    def _get_artist(resp: dict, parser: PerformersParser) -> str:
+        artist = parser.get_performers_with_role(InvolvedPersonRoleType.MainArtist)
+        if artist:
+            return ', '.join(artist)
+        return typed(safe_get(resp, "performer", "name"), str)
+
+
+    @staticmethod
+    def _get_publisher(resp: dict, album: AlbumMetadata, parser: PerformersParser) -> str:
+        publisher = parser.get_performers_with_role(InvolvedPersonRoleType.Publisher)
+        if publisher:
+            return ', '.join(publisher)
+        return album.label
+
     def format_track_path(self, format_string: str) -> str:
-        # Available keys: "tracknumber", "artist", "albumartist", "composer", "title",
-        # and "explicit", "albumcomposer"
         none_text = "Unknown"
         info = {
             "title": self.title,

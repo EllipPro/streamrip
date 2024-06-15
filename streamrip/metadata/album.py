@@ -94,13 +94,14 @@ class AlbumMetadata:
         genre = resp.get("genre", {}).get("name") or []
         date = resp.get("release_date_original") or resp.get("release_date")
         year = date[:4] if date is not None else "Unknown"
-
+        artists = resp.get("artists")
         _copyright = resp.get("copyright", "")
-
-        if artists := resp.get("artists"):
-            albumartist = ", ".join(a["name"] for a in artists)
+        if subtitle := resp.get("subtitle"):
+            albumartist = subtitle 
         else:
-            albumartist = typed(safe_get(resp, "artist", "name"), str)
+            albumartist = ", ".join(a["name"] for a in artists)
+#        else:
+#            albumartist = typed(safe_get(resp, "artist", "name"), str)
 
         albumcomposer = typed(safe_get(resp, "composer", "name", default=""), str)
         _label = resp.get("label")
