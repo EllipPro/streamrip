@@ -101,7 +101,7 @@ class AlbumMetadata:
             albumartist = ", ".join(a["name"] for a in artists)
         else:
             albumartist = typed(safe_get(resp, "artist", "name"), str)
-S
+            
         albumcomposer = typed(safe_get(resp, "composer", "name", default=""), str)
         _label = resp.get("label")
         if isinstance(_label, dict):
