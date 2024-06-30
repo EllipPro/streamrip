@@ -44,10 +44,8 @@ MP4_KEYS = (
 
 MP3_KEYS = (
     id3.TIT2,  # type: ignore
-    id3.TPE1,  # type: ignore
     id3.TALB,  # type: ignore
     id3.TPE2,  # type: ignore
-    id3.TCOM,  # type: ignore
     id3.TYER,  # type: ignore
     id3.COMM,  # type: ignore
     id3.TT1,  # type: ignore
@@ -68,10 +66,8 @@ MP3_KEYS = (
 
 METADATA_TYPES = (
     "title",
-    "artist",
     "album",
     "albumartist",
-    "composer",
     "publisher",
     "label",
     "mediatype",
@@ -92,15 +88,6 @@ METADATA_TYPES = (
     "date",
     "isrc",
     "comment",
-    "arranger",
-    "lyricist",
-    "conductor",
-    "featured",
-    "masteringengineer",
-    "mixingengineer",
-    "orchestra",
-    "producer",
-    "vocals",
 )
 
 
@@ -191,22 +178,11 @@ class Container(Enum):
         in_trackmetadata = {
             "title",
             "album",
-            "artist",
             "tracknumber",
             "discnumber",
-            "composer",
             "isrc",
             "comment",
-            "arranger",
-            "lyricist",
-            "conductor",
-            "featured",
-            "masteringengineer",
-            "mixingengineer",
-            "orchestra",
-            "producer",
             "publisher",
-            "vocals",
         }
         if attr in in_trackmetadata:
             if attr == "album":
@@ -228,6 +204,7 @@ class Container(Enum):
     def tag_audio(self, audio, tags: list[tuple]):
         for k, v in tags:
             audio[k] = v
+
 
     async def embed_cover(self, audio, cover_path):
         if self == Container.FLAC:
@@ -276,6 +253,24 @@ async def tag_file(path: str, meta: TrackMetadata, cover_path: str | None):
     tags = container.get_tag_pairs(meta)
     logger.debug("Tagging with %s", tags)
     container.tag_audio(audio, tags)
+    artist = meta.artist
+    audio['artist'] = artist
+    composer = meta.composer
+    audio['composer'] = composer
+    arranger = meta.arranger
+    audio['arranger'] = arranger
+    featured = meta.featured
+    audio['featured'] = featured
+    lyricist = meta.lyricist
+    audio['lyricist'] = lyricist
+    producer = meta.producer
+    audio['producer'] = producer
+    masteringengineer = meta.masteringengineer
+    audio['masteringengineer'] = masteringengineer
+    mixingengineer = meta.mixingengineer
+    audio['mixingengineer'] = mixingengineer
+    vocals = meta.vocals
+    audio['vocals'] = vocals
     if cover_path is not None:
         await container.embed_cover(audio, cover_path)
     container.save_audio(audio, path)
