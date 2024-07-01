@@ -203,6 +203,7 @@ class TrackMetadata:
     @classmethod
     def from_qobuz(cls, album: AlbumMetadata, resp: dict) -> TrackMetadata | None:
         performers_full_string = resp.get("performers")
+        comment = resp.get("performers")
         parser = PerformersParser(performers_full_string)
         title = typed(resp["title"].strip(), str)
         isrc = typed(resp["isrc"], str)
@@ -241,8 +242,6 @@ class TrackMetadata:
                     if contributor in contributor_role:
                         if contributor_name not in artists:
                             artists.append(contributor_name)
-                        contributor_role.remove(contributor)
-
                 if not contributor_role:
                     continue
                 performers.append(f"{contributor_name}, {', '.join(contributor_role)}")
