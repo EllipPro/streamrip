@@ -1,5 +1,5 @@
 from __future__ import annotations
-
+import unicodedata
 from collections import defaultdict
 import logging
 from dataclasses import dataclass
@@ -223,8 +223,33 @@ class TrackMetadata:
         discnumber = typed(resp.get("media_number", 1), int)
         lyricist = parser.get_performers_with_role(InvolvedPersonRoleType.Lyricist)
 
-        artist = cls._get_artist(resp, parser)
-        artist_path = ', '.join(artist)
+        album_data = resp['album']
+#        artist = cls._get_artist(resp, parser)
+        main_artist = resp.get('performer', album_data['artist'])
+        artists = [
+            unicodedata.normalize('NFKD', main_artist['name'])
+            .encode('ascii', 'ignore')
+            .decode('utf-8')
+        ]
+        if resp.get('performers'):
+            performers = []
+            for credit in resp['performers'].split(' - '):
+                contributor_role = credit.split(', ')[1:]
+                contributor_name = credit.split(', ')[0]
+
+                for contributor in ["MainArtist", "Main Artist", "Main Artist\r", "main-artist", "Performer"]:
+                    if contributor in contributor_role:
+                        if contributor_name not in artists:
+                            artists.append(contributor_name)
+                        contributor_role.remove(contributor)
+
+                if not contributor_role:
+                    continue
+                performers.append(f"{contributor_name}, {', '.join(contributor_role)}")
+            resp['performers'] = ' - '.join(performers)
+
+
+        artist_path = ', '.join(artists)
         
         conductor = parser.get_performers_with_role(InvolvedPersonRoleType.Conductor)
         featured = parser.get_performers_with_role(InvolvedPersonRoleType.FeaturedArtist)
@@ -264,7 +289,7 @@ class TrackMetadata:
             comment=comment,
             title=title,
             album=album,
-            artist=artist,
+            artist=artists,
             tracknumber=tracknumber,
             discnumber=discnumber,
             composer=composer,
