@@ -110,7 +110,7 @@ class InvolvedPersonRoleMapping:
         InvolvedPersonRoleType.RecordingEngineer: ["RecordingEngineer"],
         InvolvedPersonRoleType.Soloist: ["Soloist"],
         InvolvedPersonRoleType.StudioPersonnel: ["StudioPersonnel"],
-        InvolvedPersonRoleType.Vocals: ["Vocals"],
+        InvolvedPersonRoleType.Vocals: ["Vocals", "Voice"],
         InvolvedPersonRoleType.Writer: ["Writer"],
         InvolvedPersonRoleType.BassGuitar: ["BassGuitar"],
         InvolvedPersonRoleType.Cello: ["Cello"],
@@ -191,13 +191,13 @@ class TrackMetadata:
     vocals: str
     comment: str
     title: str
-    artist_path: str
-    composer_path: str
     album: AlbumMetadata
     artist: list
     tracknumber: int
     discnumber: int
-    composer: Optional[str]
+    composer:  str | None
+    artist_path: str | None = None
+    composer_path: str | None = None
     isrc: Optional[str] = None
 
     @classmethod
@@ -218,7 +218,10 @@ class TrackMetadata:
         arranger = parser.get_performers_with_role(InvolvedPersonRoleType.Arranger)
 
         composer = cls._get_composer(resp, parser)
-        composer_path = ', '.join(composer)
+        if composer:
+            composer_path = ', '.join(composer)
+        else:
+            composer_path = None
 
         tracknumber = typed(resp.get("track_number", 1), int)
         discnumber = typed(resp.get("media_number", 1), int)
@@ -247,8 +250,10 @@ class TrackMetadata:
                 performers.append(f"{contributor_name}, {', '.join(contributor_role)}")
             resp['performers'] = ' - '.join(performers)
 
-
-        artist_path = ', '.join(artists)
+        if artists:
+            artist_path = ', '.join(artists)
+        else:
+            artist_path = None
         
         conductor = parser.get_performers_with_role(InvolvedPersonRoleType.Conductor)
         featured = parser.get_performers_with_role(InvolvedPersonRoleType.FeaturedArtist)
@@ -313,9 +318,13 @@ class TrackMetadata:
     @staticmethod
     def _get_composer(resp: dict, parser: PerformersParser) -> str | None:
         composer = parser.get_performers_with_role(InvolvedPersonRoleType.Composer)
+        composer2 = typed(resp.get("composer", {}).get("name"), str | None)
         if composer:
             return composer
-        return typed(resp.get("composer", {}).get("name"), str | None)
+        elif composer2:
+            return composer2
+        else:
+            return None
 
     @staticmethod
     def _get_artist(resp: dict, parser: PerformersParser) -> list:

@@ -253,24 +253,34 @@ async def tag_file(path: str, meta: TrackMetadata, cover_path: str | None):
     tags = container.get_tag_pairs(meta)
     logger.debug("Tagging with %s", tags)
     container.tag_audio(audio, tags)
-    artist = meta.artist
-    audio['artist'] = artist
-    composer = meta.composer
-    audio['composer'] = composer
-    arranger = meta.arranger
-    audio['arranger'] = arranger
-    featured = meta.featured
-    audio['featured'] = featured
-    lyricist = meta.lyricist
-    audio['lyricist'] = lyricist
-    producer = meta.producer
-    audio['producer'] = producer
-    masteringengineer = meta.masteringengineer
-    audio['masteringengineer'] = masteringengineer
-    mixingengineer = meta.mixingengineer
-    audio['mixingengineer'] = mixingengineer
-    vocals = meta.vocals
-    audio['vocals'] = vocals
+    if meta.artist:
+        artist = meta.artist
+        audio['artist'] = artist
+    if meta.composer:
+        composer = meta.composer
+        audio['composer'] = composer
+    if meta.arranger:
+        arranger = meta.arranger
+        audio['arranger'] = arranger
+    if meta.featured:
+        featured = meta.featured
+        audio['featured'] = featured
+    if meta.lyricist:
+        lyricist = meta.lyricist
+        audio['lyricist'] = lyricist
+    if meta.producer:
+        producer = meta.producer
+        audio['producer'] = producer
+    if meta.masteringengineer:
+        masteringengineer = meta.masteringengineer
+        audio['masteringengineer'] = masteringengineer
+    if meta.mixingengineer:
+        mixingengineer = meta.mixingengineer
+        audio['mixingengineer'] = mixingengineer
+    if meta.vocals:
+        vocals = meta.vocals
+        audio['vocals'] = vocals
+
     if cover_path is not None:
         await container.embed_cover(audio, cover_path)
     container.save_audio(audio, path)
