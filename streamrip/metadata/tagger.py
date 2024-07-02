@@ -271,6 +271,9 @@ async def tag_file(path: str, meta: TrackMetadata, cover_path: str | None):
     if meta.producer:
         producer = meta.producer
         audio['producer'] = producer
+    if meta.programmer:
+        programmer = meta.programmer
+        audio['programmer'] = programmer
     if meta.masteringengineer:
         masteringengineer = meta.masteringengineer
         audio['masteringengineer'] = masteringengineer
@@ -280,6 +283,9 @@ async def tag_file(path: str, meta: TrackMetadata, cover_path: str | None):
     if meta.vocals:
         vocals = meta.vocals
         audio['vocals'] = vocals
+    if meta.writer:
+        writer = meta.writer
+        audio['writer'] = writer
 
     if cover_path is not None:
         await container.embed_cover(audio, cover_path)

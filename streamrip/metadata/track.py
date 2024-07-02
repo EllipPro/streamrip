@@ -187,8 +187,10 @@ class TrackMetadata:
     mixingengineer: str
     orchestra: str
     producer: str
+    programmer: str
     publisher: str
     vocals: str
+    writer: str
     comment: str
     title: str
     album: AlbumMetadata
@@ -261,8 +263,10 @@ class TrackMetadata:
         mixingengineer = parser.get_performers_with_role(InvolvedPersonRoleType.MixingEngineer)
         orchestra = parser.get_performers_with_role(InvolvedPersonRoleType.Orchestra)
         producer = parser.get_performers_with_role(InvolvedPersonRoleType.Producer)
+        programmer = parser.get_performers_with_role(InvolvedPersonRoleType.Programmer)
         publisher = cls._get_publisher(resp, album, parser)
         vocals = parser.get_performers_with_role(InvolvedPersonRoleType.Vocals)
+        writer = parser.get_performers_with_role(InvolvedPersonRoleType.Writer)
         comment = resp.get("performers")
         track_id = str(resp["id"])
         bit_depth = typed(resp.get("maximum_bit_depth"), int | None)
@@ -288,8 +292,10 @@ class TrackMetadata:
             mixingengineer=mixingengineer,
             orchestra=orchestra,
             producer=producer,
+            programmer=programmer,
             publisher=publisher,
             vocals=vocals,
+            writer=writer,
             comment=comment,
             title=title,
             album=album,
