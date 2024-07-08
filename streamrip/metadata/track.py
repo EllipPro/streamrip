@@ -264,7 +264,7 @@ class TrackMetadata:
         orchestra = parser.get_performers_with_role(InvolvedPersonRoleType.Orchestra)
         producer = parser.get_performers_with_role(InvolvedPersonRoleType.Producer)
         programmer = parser.get_performers_with_role(InvolvedPersonRoleType.Programmer)
-        publisher = cls._get_publisher(resp, album, parser)
+        publisher = album.label
         vocals = parser.get_performers_with_role(InvolvedPersonRoleType.Vocals)
         writer = parser.get_performers_with_role(InvolvedPersonRoleType.Writer)
         comment = resp.get("performers")
@@ -339,13 +339,6 @@ class TrackMetadata:
             return artist
         return typed(safe_get(resp, "performer", "name"), str)
 
-
-    @staticmethod
-    def _get_publisher(resp: dict, album: AlbumMetadata, parser: PerformersParser) -> str:
-        publisher = parser.get_performers_with_role(InvolvedPersonRoleType.Publisher)
-        if publisher:
-            return ', '.join(publisher)
-        return album.label
 
     def format_track_path(self, format_string: str) -> str:
         none_text = "Unknown"

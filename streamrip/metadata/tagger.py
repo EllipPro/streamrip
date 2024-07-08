@@ -44,8 +44,10 @@ MP4_KEYS = (
 
 MP3_KEYS = (
     id3.TIT2,  # type: ignore
+    id3.TPE1,  # type: ignore
     id3.TALB,  # type: ignore
     id3.TPE2,  # type: ignore
+    id3.TCOM,  # type: ignore
     id3.TYER,  # type: ignore
     id3.COMM,  # type: ignore
     id3.TT1,  # type: ignore
@@ -60,19 +62,19 @@ MP3_KEYS = (
     id3.TPOS,  # type: ignore
     None,
     None,
-    None,
+    id3.TDAT,
     id3.TSRC,
+    id3.TPUB,
 )
 
 METADATA_TYPES = (
     "title",
+    "artist",
     "album",
     "albumartist",
-    "publisher",
-    "label",
-    "mediatype",
-    "upc",
+    "composer",
     "year",
+    "comment",
     "description",
     "purchase_date",
     "grouping",
@@ -87,7 +89,10 @@ METADATA_TYPES = (
     "disctotal",
     "date",
     "isrc",
-    "comment",
+    "publisher",
+    "label",
+    "mediatype",
+    "upc",
 )
 
 
@@ -178,11 +183,14 @@ class Container(Enum):
         in_trackmetadata = {
             "title",
             "album",
+            "artist",
             "tracknumber",
             "discnumber",
+            "composer",
             "isrc",
             "comment",
             "publisher",
+            "lyricist",
         }
         if attr in in_trackmetadata:
             if attr == "album":
@@ -235,7 +243,7 @@ class Container(Enum):
         elif self == Container.AAC:
             audio.save()
         elif self == Container.MP3:
-            audio.save(path, "v2_version=3")
+            audio.save(path, "v2_version=4")
 
 
 async def tag_file(path: str, meta: TrackMetadata, cover_path: str | None):
@@ -253,39 +261,52 @@ async def tag_file(path: str, meta: TrackMetadata, cover_path: str | None):
     tags = container.get_tag_pairs(meta)
     logger.debug("Tagging with %s", tags)
     container.tag_audio(audio, tags)
-    if meta.artist:
-        artist = meta.artist
-        audio['artist'] = artist
-    if meta.composer:
-        composer = meta.composer
-        audio['composer'] = composer
-    if meta.arranger:
-        arranger = meta.arranger
-        audio['arranger'] = arranger
-    if meta.featured:
-        featured = meta.featured
-        audio['featured'] = featured
-    if meta.lyricist:
-        lyricist = meta.lyricist
-        audio['lyricist'] = lyricist
-    if meta.producer:
-        producer = meta.producer
-        audio['producer'] = producer
-    if meta.programmer:
-        programmer = meta.programmer
-        audio['programmer'] = programmer
-    if meta.masteringengineer:
-        masteringengineer = meta.masteringengineer
-        audio['masteringengineer'] = masteringengineer
-    if meta.mixingengineer:
-        mixingengineer = meta.mixingengineer
-        audio['mixingengineer'] = mixingengineer
-    if meta.vocals:
-        vocals = meta.vocals
-        audio['vocals'] = vocals
-    if meta.writer:
-        writer = meta.writer
-        audio['writer'] = writer
+    if ext == "flac":
+        if meta.artist:
+            artist = meta.artist
+            audio['artist'] = artist
+        if meta.composer:
+            composer = meta.composer
+            audio['composer'] = composer
+        if meta.arranger:
+            arranger = meta.arranger
+            audio['arranger'] = arranger
+        if meta.featured:
+            featured = meta.featured
+            audio['featured'] = featured
+        if meta.lyricist:
+            lyricist = meta.lyricist
+            audio['lyricist'] = lyricist
+        if meta.producer:
+            producer = meta.producer
+            audio['producer'] = producer
+        if meta.programmer:
+            programmer = meta.programmer
+            audio['programmer'] = programmer
+        if meta.masteringengineer:
+            masteringengineer = meta.masteringengineer
+            audio['masteringengineer'] = masteringengineer
+        if meta.mixingengineer:
+            mixingengineer = meta.mixingengineer
+            audio['mixingengineer'] = mixingengineer
+        if meta.vocals:
+            vocals = meta.vocals
+            audio['vocals'] = vocals
+        if meta.writer:
+            writer = meta.writer
+            audio['writer'] = writer
+
+    elif ext == "mp3":
+        if meta.artist:
+            artist = meta.artist
+            audio["TPE1"] = id3.TPE1(encoding=3, text=artist)
+        if meta.composer:
+            composer = meta.composer
+            audio["TCOM"] = id3.TCOM(encoding=3, text=composer)
+        if meta.lyricist:
+            lyricist = meta.lyricist
+            audio['TEXT'] = id3.TEXT(encoding=3, text=lyricist)
+
 
     if cover_path is not None:
         await container.embed_cover(audio, cover_path)

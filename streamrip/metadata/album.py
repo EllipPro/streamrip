@@ -96,10 +96,17 @@ class AlbumMetadata:
         year = date[:4] if date is not None else "Unknown"
         artists = resp.get("artists")
         _copyright = resp.get("copyright", "")
+        albumartist = []
         if subtitle := resp.get("subtitle"):
-            albumartist = subtitle 
+            albumartist1 = subtitle 
         else:
-            albumartist = ", ".join(a["name"] for a in artists)
+            albumartist1 = ", ".join(a["name"] for a in artists)
+        if albumartist1:
+            for albumartist1 in albumartist1.split(', '):
+                if albumartist1 not in albumartist:
+                    albumartist.append(albumartist1)
+        albumartist = ', '.join(albumartist)
+
 #        else:
 #            albumartist = typed(safe_get(resp, "artist", "name"), str)
 
