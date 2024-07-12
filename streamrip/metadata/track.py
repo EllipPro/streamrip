@@ -85,7 +85,7 @@ class InvolvedPersonRoleMapping:
         InvolvedPersonRoleType.Orchestra: ["Orchestra"],
         InvolvedPersonRoleType.Producer: ["Producer", "Producer\r"],
         InvolvedPersonRoleType.Publisher: ["Publisher", "MusicPublisher"],
-        InvolvedPersonRoleType.Arranger: ["Arranger"],
+        InvolvedPersonRoleType.Arranger: ["Arranger", "MusicArranger"],
         InvolvedPersonRoleType.AandRDirector: ["AandRDirector"],
         InvolvedPersonRoleType.AandR: ["AandR"],
         InvolvedPersonRoleType.AAndRAdministrator: ["AAndRAdministrator"],
