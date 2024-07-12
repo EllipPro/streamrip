@@ -194,7 +194,7 @@ class TrackMetadata:
     comment: str
     title: str
     album: AlbumMetadata
-    artist: list
+    artist: str
     tracknumber: int
     discnumber: int
     composer:  str | None
@@ -229,29 +229,7 @@ class TrackMetadata:
         discnumber = typed(resp.get("media_number", 1), int)
         lyricist = parser.get_performers_with_role(InvolvedPersonRoleType.Lyricist)
 
-        album_data = resp['album']
-#        artist = cls._get_artist(resp, parser)
-        main_artist = resp.get('performer', album_data['artist'])
-        artists = [
-            unicodedata.normalize('NFKD', main_artist['name'])
-            .encode('ascii', 'ignore')
-            .decode('utf-8')
-        ]
-        if resp.get('performers'):
-            performers = []
-            for credit in resp['performers'].split(' - '):
-                contributor_role = credit.split(', ')[1:]
-                contributor_name = credit.split(', ')[0]
-
-                for contributor in ["MainArtist", "Main Artist", "Main Artist\r", "main-artist", "Performer"]:
-                    if contributor in contributor_role:
-                        if contributor_name not in artists:
-                            artists.append(contributor_name)
-                if not contributor_role:
-                    continue
-                performers.append(f"{contributor_name}, {', '.join(contributor_role)}")
-            resp['performers'] = ' - '.join(performers)
-
+        artists =  cls._get_artist(resp, parser)
         if artists:
             artist_path = ', '.join(artists)
         else:
@@ -334,9 +312,30 @@ class TrackMetadata:
 
     @staticmethod
     def _get_artist(resp: dict, parser: PerformersParser) -> list:
-        artist = parser.get_performers_with_role(InvolvedPersonRoleType.MainArtist)
-        if artist:
-            return artist
+        album_data = resp['album']
+        main_artist = resp.get('performer', album_data['artist'])
+        artists = [
+            unicodedata.normalize('NFKD', main_artist['name'])
+            .encode('ascii', 'ignore')
+            .decode('utf-8')
+        ]
+        if resp.get('performers'):
+            performers = []
+            for credit in resp['performers'].split(' - '):
+                contributor_role = credit.split(', ')[1:]
+                contributor_name = credit.split(', ')[0]
+
+                for contributor in ["MainArtist", "Main Artist", "Main Artist\r", "main-artist", "Performer", "Primary"]:
+                    if contributor in contributor_role:
+                        if contributor_name not in artists:
+                            artists.append(contributor_name)
+                if not contributor_role:
+                    continue
+                performers.append(f"{contributor_name}, {', '.join(contributor_role)}")
+            resp['performers'] = ' - '.join(performers)
+            artists = [artist for artist in artists if artist != ""]
+        if artists:
+            return artists
         return typed(safe_get(resp, "performer", "name"), str)
 
 
