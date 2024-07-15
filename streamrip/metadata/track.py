@@ -21,55 +21,59 @@ class InvolvedPersonRoleType(Enum):
     Composer = 1
     Conductor = 2
     FeaturedArtist = 3
-    Instruments = 4
-    Lyricist = 5
-    MainArtist = 6
-    MixingEngineer = 7
-    Producer = 8
-    Publisher = 9
-    Arranger = 10
-    AandRDirector = 11
-    AandR = 12
-    AAndRAdministrator = 13
-    AdditionalProduction = 14
-    AHH = 15
-    AssistantMixer = 16
-    AssistantEngineer = 17
-    AssistantProducer = 18
-    AsstRecordingEngineer = 19
-    AssociatedPerformer = 20
-    Author = 21
-    Choir = 22
-    ChorusMaster = 23
-    Contractor = 24
-    CoProducer = 25
-    Masterer = 26
-    MiscProd = 27
-    MusicProduction = 28
-    PerformanceArranger = 29
-    Programming = 30
-    Programmer = 31
-    RecordingEngineer = 32
-    Soloist = 33
-    StudioPersonnel = 34
-    Vocals = 35
-    Writer = 36
-    BassGuitar = 37
-    Cello = 38
-    Drums = 39
-    Guitar = 40
-    Horn = 41
-    Keyboards = 42
-    Percussion = 43
-    Piano = 44
-    Trombone = 45
-    Tuba = 46
-    Trumpet = 47
-    Viola = 48
-    Violin = 49
-    Orchestra = 50
-    Engineer = 51
-    MasteringEngineer = 52
+    Lyricist = 4
+    MainArtist = 5
+    MixingEngineer = 6
+    Producer = 7
+    Publisher = 8
+    Arranger = 9
+    AandRDirector = 10
+    AandR = 11
+    AAndRAdministrator = 12
+    AdditionalProduction = 13
+    AHH = 14
+    AssistantMixer = 15
+    AssistantEngineer = 16
+    AssistantProducer = 17
+    AsstRecordingEngineer = 18
+    AssociatedPerformer = 19
+    Author = 20
+    Choir = 21
+    ChorusMaster = 22
+    Contractor = 23
+    CoProducer = 24
+    Masterer = 25
+    MiscProd = 26
+    MusicProduction = 27
+    PerformanceArranger = 28
+    Programming = 29
+    Programmer = 30
+    RecordingEngineer = 31
+    Soloist = 32
+    StudioPersonnel = 33
+    Vocals = 34
+    Writer = 35
+    BassGuitar = 36
+    Cello = 37
+    Drums = 38
+    Guitar = 39
+    Horn = 40
+    Keyboards = 41
+    Percussion = 42
+    Piano = 43
+    Trombone = 44
+    Tuba = 45
+    Trumpet = 46
+    Viola = 47
+    Violin = 48
+    Orchestra = 49
+    Engineer = 50
+    MasteringEngineer = 51
+    Voice = 52
+    Accordion = 53
+    ClassicalGuitar = 54
+    DoubleBass = 55
+    VibraHarp = 56
 
 class InvolvedPersonRoleMapping:
     RoleMappings = {
@@ -86,33 +90,33 @@ class InvolvedPersonRoleMapping:
         InvolvedPersonRoleType.Producer: ["Producer", "Producer\r"],
         InvolvedPersonRoleType.Publisher: ["Publisher", "MusicPublisher"],
         InvolvedPersonRoleType.Arranger: ["Arranger", "MusicArranger"],
-        InvolvedPersonRoleType.AandRDirector: ["AandRDirector"],
-        InvolvedPersonRoleType.AandR: ["AandR"],
-        InvolvedPersonRoleType.AAndRAdministrator: ["AAndRAdministrator"],
-        InvolvedPersonRoleType.AdditionalProduction: ["AdditionalProduction"],
+        InvolvedPersonRoleType.AandRDirector: ["A&RDirector", "A&R Director"],
+        InvolvedPersonRoleType.AandR: ["A&R"],
+        InvolvedPersonRoleType.AAndRAdministrator: ["A&RAdministrator", "A&R Administrator"],
+        InvolvedPersonRoleType.AdditionalProduction: ["AdditionalProduction", "Additional Production"],
         InvolvedPersonRoleType.AHH: ["AHH"],
-        InvolvedPersonRoleType.AssistantMixer: ["AssistantMixer"],
-        InvolvedPersonRoleType.AssistantEngineer: ["AssistantEngineer"],
-        InvolvedPersonRoleType.AssistantProducer: ["AssistantProducer"],
-        InvolvedPersonRoleType.AsstRecordingEngineer: ["AsstRecordingEngineer"],
-        InvolvedPersonRoleType.AssociatedPerformer: ["AssociatedPerformer"],
+        InvolvedPersonRoleType.AssistantMixer: ["AssistantMixer", "Assistant Mixer"],
+        InvolvedPersonRoleType.AssistantEngineer: ["AssistantEngineer", "Assistant Engineer"],
+        InvolvedPersonRoleType.AssistantProducer: ["AssistantProducer", "Assistant Producer"],
+        InvolvedPersonRoleType.AsstRecordingEngineer: ["AsstRecordingEngineer", "Asst Recording Engineer"],
+        InvolvedPersonRoleType.AssociatedPerformer: ["AssociatedPerformer", "Associated Performer"],
         InvolvedPersonRoleType.Author: ["Author"],
         InvolvedPersonRoleType.Choir: ["Choir"],
-        InvolvedPersonRoleType.ChorusMaster: ["ChorusMaster"],
+        InvolvedPersonRoleType.ChorusMaster: ["ChorusMaster", "Chorus Master"],
         InvolvedPersonRoleType.Contractor: ["Contractor"],
         InvolvedPersonRoleType.CoProducer: ["CoProducer"],
         InvolvedPersonRoleType.Masterer: ["Masterer"],
         InvolvedPersonRoleType.MiscProd: ["MiscProd"],
-        InvolvedPersonRoleType.MusicProduction: ["MusicProduction"],
-        InvolvedPersonRoleType.PerformanceArranger: ["PerformanceArranger"],
+        InvolvedPersonRoleType.MusicProduction: ["MusicProduction", "Music Production"],
+        InvolvedPersonRoleType.PerformanceArranger: ["PerformanceArranger", "Performance Arranger"],
         InvolvedPersonRoleType.Programming: ["Programming"],
         InvolvedPersonRoleType.Programmer: ["Programmer"],
-        InvolvedPersonRoleType.RecordingEngineer: ["RecordingEngineer"],
+        InvolvedPersonRoleType.RecordingEngineer: ["RecordingEngineer", "Recording Engineer"],
         InvolvedPersonRoleType.Soloist: ["Soloist"],
-        InvolvedPersonRoleType.StudioPersonnel: ["StudioPersonnel"],
-        InvolvedPersonRoleType.Vocals: ["Vocals", "Voice"],
+        InvolvedPersonRoleType.StudioPersonnel: ["StudioPersonnel", "Studio Personnel"],
+        InvolvedPersonRoleType.Vocals: ["Vocals"],
         InvolvedPersonRoleType.Writer: ["Writer"],
-        InvolvedPersonRoleType.BassGuitar: ["BassGuitar"],
+        InvolvedPersonRoleType.BassGuitar: ["BassGuitar", "Bass Guitar"],
         InvolvedPersonRoleType.Cello: ["Cello"],
         InvolvedPersonRoleType.Drums: ["Drums"],
         InvolvedPersonRoleType.Guitar: ["Guitar"],
@@ -124,7 +128,12 @@ class InvolvedPersonRoleMapping:
         InvolvedPersonRoleType.Tuba: ["Tuba"],
         InvolvedPersonRoleType.Trumpet: ["Trumpet"],
         InvolvedPersonRoleType.Viola: ["Viola"],
-        InvolvedPersonRoleType.Violin: ["Violin"]
+        InvolvedPersonRoleType.Violin: ["Violin"],
+        InvolvedPersonRoleType.Voice: ["Voice"],
+        InvolvedPersonRoleType.Accordion: ["Accordion"],
+        InvolvedPersonRoleType.ClassicalGuitar: ["ClassicalGuitar", "Classical Guitar"],
+        InvolvedPersonRoleType.DoubleBass: ["DoubleBass", "Double Bass"],
+        InvolvedPersonRoleType.VibraHarp: ["VibraHarp", "Vibra Harp"],
     }
 
     @staticmethod
@@ -180,6 +189,43 @@ class TrackMetadata:
     info: TrackInfo
     performers_full_string: str
     arranger: str
+    ahh: str
+    assistantmixer: str
+    assistantengineer: str
+    assistantproducer: str
+    asstrecordingengineer: str
+    associatedperformer: str
+    author: str
+    choir: str
+    chorusmaster: str
+    contractor: str
+    coproducer: str
+    masterer: str
+    miscprod: str
+    musicproduction: str
+    performancearranger: str
+    programming: str
+    recordingengineer: str
+    soloist: str
+    studiopersonnel: str
+    bassguitar: str
+    cello: str
+    drums: str
+    guitar: str
+    horn: str
+    keyboards: str
+    percussion: str
+    piano: str
+    trombone: str
+    tuba: str
+    trumpet: str
+    viola: str
+    violin: str
+    engineer: str
+    accordion: str
+    classicalguitar: str
+    doublebass: str
+    vibraharp: str
     lyricist: str
     conductor: str
     featured: str
@@ -190,6 +236,7 @@ class TrackMetadata:
     programmer: str
     publisher: str
     vocals: str
+    voice: str
     writer: str
     comment: str
     title: str
@@ -218,6 +265,45 @@ class TrackMetadata:
         title = cls._append_version_and_work(title, version, work)
 
         arranger = parser.get_performers_with_role(InvolvedPersonRoleType.Arranger)
+        ahh = parser.get_performers_with_role(InvolvedPersonRoleType.AHH)
+        assistantmixer = parser.get_performers_with_role(InvolvedPersonRoleType.AssistantMixer)
+        assistantengineer = parser.get_performers_with_role(InvolvedPersonRoleType.AssistantEngineer)
+        assistantproducer = parser.get_performers_with_role(InvolvedPersonRoleType.AssistantProducer)
+        asstrecordingengineer = parser.get_performers_with_role(InvolvedPersonRoleType.AsstRecordingEngineer)
+        associatedperformer = parser.get_performers_with_role(InvolvedPersonRoleType.AssociatedPerformer)
+        author = parser.get_performers_with_role(InvolvedPersonRoleType.Author)
+        choir = parser.get_performers_with_role(InvolvedPersonRoleType.Choir)
+        chorusmaster = parser.get_performers_with_role(InvolvedPersonRoleType.ChorusMaster)
+        contractor = parser.get_performers_with_role(InvolvedPersonRoleType.Contractor)
+        coproducer = parser.get_performers_with_role(InvolvedPersonRoleType.CoProducer)
+        masterer = parser.get_performers_with_role(InvolvedPersonRoleType.Masterer)
+        miscprod = parser.get_performers_with_role(InvolvedPersonRoleType.MiscProd)
+        musicproduction = parser.get_performers_with_role(InvolvedPersonRoleType.MusicProduction)
+        performancearranger = parser.get_performers_with_role(InvolvedPersonRoleType.PerformanceArranger)
+        programming = parser.get_performers_with_role(InvolvedPersonRoleType.Programming)
+        recordingengineer = parser.get_performers_with_role(InvolvedPersonRoleType.RecordingEngineer)
+        soloist = parser.get_performers_with_role(InvolvedPersonRoleType.Soloist)
+        studiopersonnel = parser.get_performers_with_role(InvolvedPersonRoleType.StudioPersonnel)
+        bassguitar = parser.get_performers_with_role(InvolvedPersonRoleType.BassGuitar)
+        cello = parser.get_performers_with_role(InvolvedPersonRoleType.Cello)
+        drums = parser.get_performers_with_role(InvolvedPersonRoleType.Drums)
+        guitar = parser.get_performers_with_role(InvolvedPersonRoleType.Guitar)
+        horn = parser.get_performers_with_role(InvolvedPersonRoleType.Horn)
+        keyboards = parser.get_performers_with_role(InvolvedPersonRoleType.Keyboards)
+        percussion = parser.get_performers_with_role(InvolvedPersonRoleType.Percussion)
+        piano = parser.get_performers_with_role(InvolvedPersonRoleType.Piano)
+        trombone = parser.get_performers_with_role(InvolvedPersonRoleType.Trombone)
+        tuba = parser.get_performers_with_role(InvolvedPersonRoleType.Tuba)
+        trumpet = parser.get_performers_with_role(InvolvedPersonRoleType.Trumpet)
+        viola = parser.get_performers_with_role(InvolvedPersonRoleType.Viola)
+        violin = parser.get_performers_with_role(InvolvedPersonRoleType.Violin)
+        orchestra = parser.get_performers_with_role(InvolvedPersonRoleType.Orchestra)
+        engineer = parser.get_performers_with_role(InvolvedPersonRoleType.Engineer)
+        accordion = parser.get_performers_with_role(InvolvedPersonRoleType.Accordion)
+        classicalguitar = parser.get_performers_with_role(InvolvedPersonRoleType.ClassicalGuitar)
+        doublebass = parser.get_performers_with_role(InvolvedPersonRoleType.DoubleBass)
+        vibraharp = parser.get_performers_with_role(InvolvedPersonRoleType.VibraHarp)
+
 
         composer = cls._get_composer(resp, parser)
         if composer:
@@ -244,6 +330,7 @@ class TrackMetadata:
         programmer = parser.get_performers_with_role(InvolvedPersonRoleType.Programmer)
         publisher = album.label
         vocals = parser.get_performers_with_role(InvolvedPersonRoleType.Vocals)
+        voice = parser.get_performers_with_role(InvolvedPersonRoleType.Voice)
         writer = parser.get_performers_with_role(InvolvedPersonRoleType.Writer)
         comment = resp.get("performers")
         track_id = str(resp["id"])
@@ -263,6 +350,43 @@ class TrackMetadata:
             info=info,
             performers_full_string=performers_full_string,
             arranger=arranger,
+            ahh=ahh,
+            assistantmixer=assistantmixer,
+            assistantengineer=assistantengineer,
+            assistantproducer=assistantproducer,
+            asstrecordingengineer=asstrecordingengineer,
+            associatedperformer=associatedperformer,
+            author=author,
+            choir=choir,
+            chorusmaster=chorusmaster,
+            contractor=contractor,
+            coproducer=coproducer,
+            masterer=masterer,
+            miscprod=miscprod,
+            musicproduction=musicproduction,
+            performancearranger=performancearranger,
+            programming=programming,
+            recordingengineer=recordingengineer,
+            soloist=soloist,
+            studiopersonnel=studiopersonnel,
+            bassguitar=bassguitar,
+            cello=cello,
+            drums=drums,
+            guitar=guitar,
+            horn=horn,
+            keyboards=keyboards,
+            percussion=percussion,
+            piano=piano,
+            trombone=trombone,
+            tuba=tuba,
+            trumpet=trumpet,
+            viola=viola,
+            violin=violin,
+            engineer=engineer,
+            accordion=accordion,
+            classicalguitar=classicalguitar,
+            doublebass=doublebass,
+            vibraharp=vibraharp,
             lyricist=lyricist,
             conductor=conductor,
             featured=featured,
@@ -273,6 +397,7 @@ class TrackMetadata:
             programmer=programmer,
             publisher=publisher,
             vocals=vocals,
+            voice=voice,
             writer=writer,
             comment=comment,
             title=title,

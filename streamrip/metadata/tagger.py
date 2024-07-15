@@ -261,40 +261,110 @@ async def tag_file(path: str, meta: TrackMetadata, cover_path: str | None):
     tags = container.get_tag_pairs(meta)
     logger.debug("Tagging with %s", tags)
     container.tag_audio(audio, tags)
+
     if ext == "flac":
         if meta.artist:
-            artist = meta.artist
-            audio['artist'] = artist
+            audio['artist'] = meta.artist
         if meta.composer:
-            composer = meta.composer
-            audio['composer'] = composer
+            audio['composer'] = meta.composer
         if meta.arranger:
-            arranger = meta.arranger
-            audio['arranger'] = arranger
+            audio['arranger'] = meta.arranger
+        if meta.ahh:
+            audio['ahh'] = meta.ahh
+        if meta.assistantmixer:
+            audio['assistantmixer'] = meta.assistantmixer
+        if meta.assistantengineer:
+            audio['assistantengineer'] = meta.assistantengineer
+        if meta.assistantproducer:
+            audio['assistantproducer'] = meta.assistantproducer
+        if meta.asstrecordingengineer:
+            audio['asstrecordingengineer'] = meta.asstrecordingengineer
+        if meta.associatedperformer:
+            audio['associatedperformer'] = meta.associatedperformer
+        if meta.author:
+            audio['author'] = meta.author
+        if meta.choir:
+            audio['choir'] = meta.choir
+        if meta.chorusmaster:
+            audio['chorusmaster'] = meta.chorusmaster
+        if meta.conductor:
+            audio['conductor'] = meta.conductor
+        if meta.contractor:
+            audio['contractor'] = meta.contractor
+        if meta.coproducer:
+            audio['coproducer'] = meta.coproducer
+        if meta.masterer:
+            audio['masterer'] = meta.masterer
+        if meta.miscprod:
+            audio['miscprod'] = meta.miscprod
+        if meta.musicproduction:
+            audio['musicproduction'] = meta.musicproduction
+        if meta.orchestra:
+            audio['orchestra'] = meta.orchestra
+        if meta.performancearranger:
+            audio['performancearranger'] = meta.performancearranger
+        if meta.programming:
+            audio['programming'] = meta.programming
+        if meta.recordingengineer:
+            audio['recordingengineer'] = meta.recordingengineer
+        if meta.soloist:
+            audio['soloist'] = meta.soloist
+        if meta.studiopersonnel:
+            audio['studiopersonnel'] = meta.studiopersonnel
+        if meta.bassguitar:
+            audio['bassguitar'] = meta.bassguitar
+        if meta.cello:
+            audio['cello'] = meta.cello
+        if meta.drums:
+            audio['drums'] = meta.drums
+        if meta.guitar:
+            audio['guitar'] = meta.guitar
+        if meta.horn:
+            audio['horn'] = meta.horn
+        if meta.keyboards:
+            audio['keyboards'] = meta.keyboards
+        if meta.percussion:
+            audio['percussion'] = meta.percussion
+        if meta.piano:
+            audio['piano'] = meta.piano
+        if meta.trombone:
+            audio['trombone'] = meta.trombone
+        if meta.tuba:
+            audio['tuba'] = meta.tuba
+        if meta.trumpet:
+            audio['trumpet'] = meta.trumpet
+        if meta.viola:
+            audio['viola'] = meta.viola
+        if meta.violin:
+            audio['violin'] = meta.violin
+        if meta.engineer:
+            audio['engineer'] = meta.engineer
+        if meta.accordion:
+            audio['accordion'] = meta.accordion
+        if meta.classicalguitar:
+            audio['classicalguitar'] = meta.classicalguitar
+        if meta.doublebass:
+            audio['doublebass'] = meta.doublebass
+        if meta.vibraharp:
+            audio['vibraharp'] = meta.vibraharp
         if meta.featured:
-            featured = meta.featured
-            audio['featured'] = featured
+            audio['featured'] = meta.featured
         if meta.lyricist:
-            lyricist = meta.lyricist
-            audio['lyricist'] = lyricist
+            audio['lyricist'] = meta.lyricist
         if meta.producer:
-            producer = meta.producer
-            audio['producer'] = producer
+            audio['producer'] = meta.producer
         if meta.programmer:
-            programmer = meta.programmer
-            audio['programmer'] = programmer
+            audio['programmer'] = meta.programmer
         if meta.masteringengineer:
-            masteringengineer = meta.masteringengineer
-            audio['masteringengineer'] = masteringengineer
+            audio['masteringengineer'] = meta.masteringengineer
         if meta.mixingengineer:
-            mixingengineer = meta.mixingengineer
-            audio['mixingengineer'] = mixingengineer
+            audio['mixingengineer'] = meta.mixingengineer
         if meta.vocals:
-            vocals = meta.vocals
-            audio['vocals'] = vocals
+            audio['vocals'] = meta.vocals
+        if meta.voice:
+            audio['voice'] = meta.voice
         if meta.writer:
-            writer = meta.writer
-            audio['writer'] = writer
+            audio['writer'] = meta.writer
 
     elif ext == "mp3":
         if meta.artist:
